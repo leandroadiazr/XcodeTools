@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>CustomSubTitleLabel</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>class CustomSubTitleLabel: UILabel {
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configure()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    convenience init(fontSize: CGFloat, backgroundColor: UIColor) {
+        self.init(frame: .zero)
+        self.font = UIFont.systemFont(ofSize: fontSize, weight: .medium)
+        self.backgroundColor = backgroundColor
+    }
+    
+    private func configure(){
+        textColor                    = .secondaryLabel
+        adjustsFontSizeToFitWidth    = true
+        minimumScaleFactor           = 0.90
+        lineBreakMode                = .byTruncatingTail
+        translatesAutoresizingMaskIntoConstraints = false
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>C860CF74-494B-4635-A5FF-DD1F31CE4029</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>CustomSubTitleLabel</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
