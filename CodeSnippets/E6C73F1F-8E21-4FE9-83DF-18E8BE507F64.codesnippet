@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string> func checkIfNewVersionIsAvailable() -&gt; Bool {
+        guard let info = Bundle.main.infoDictionary,
+              let currentVersion = info["CFBundleShortVersionString"] as? String,
+              let identifier = info["CFBundleIdentifier"] as? String,
+              let url = URL(string: "http://itunes.apple.com/us/lookup?bundleId=\(identifier)") else {
+            return false
+        }
+        guard let data = try? Data(contentsOf: url) else { return false}
+        guard let json = try? JSONSerialization.jsonObject(with: data , options: [.allowFragments]) as? [String: Any] else {
+            return false
+        }
+        if let result = (json["results"] as? [Any])?.first as? [String: Any], let version = result["version"] as? String {
+            var arrayStore = version.split(separator: ".")
+            var arrayLocal = currentVersion.split(separator: ".")
+            
+            while arrayLocal.count &lt; arrayStore.count {
+                arrayLocal.append("0")
+            }
+            while arrayStore.count &lt; arrayLocal.count {
+                arrayStore.append("0")
+            }
+            
+            // check each segment of the version
+            for (index, value) in arrayLocal.enumerated() {
+                if Int(value)! &lt; Int(arrayStore[index])! {
+                    return true
+                }
+            }
+        }
+        return false
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>E6C73F1F-8E21-4FE9-83DF-18E8BE507F64</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Check for Version Update Implementantion</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>SettingRootViewController on UIWindow animated</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>/**
+ *  UIWindow extension for setting the rootViewController on a UIWindow instance in a safe and animatable way.
+ */
+public extension UIWindow {
+
+    /**
+     Set the rootViewController on this UIWindow instance.
+
+     - parameter viewController: The view controller to set
+     - parameter animated:       Whether or not to animate the transition, animation is a cross-fade
+     - parameter completion:     Completion block to be invoked after the transition finishes
+     */
+    @nonobjc func setRootViewController(_ viewController: UIViewController, animated: Bool, completion: @escaping () -&gt; Void = {}) {
+        let previousRootViewController = rootViewController
+        let updateViewController = {
+            // Disabling animation prevents layout and visual issues during the transition
+            UIView.performWithoutAnimation {
+                self.rootViewController = viewController
+            }
+        }
+        let removePreviousAndExecuteCompletion = { (_: Bool) in
+            // If a view controller is currently presented, it must be dismissed as a separate step
+            // than the swapping of the root VC of the window.
+            // Failure to do this appears to result in a retain cycle in the orphaned VC stack.
+            previousRootViewController?.dismiss(animated: false, completion: nil)
+            previousRootViewController?.view.removeFromSuperview()
+            completion()
+        }
+        if animated &amp;&amp; previousRootViewController != nil {
+            UIView.transition(with: self,
+                              duration: 0.3,
+                              options: .transitionCrossDissolve,
+                              animations: updateViewController,
+                              completion: removePreviousAndExecuteCompletion)
+        }
+        else {
+            updateViewController()
+            removePreviousAndExecuteCompletion(true)
+        }
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>9EFA1FF3-CE9D-4049-84F9-AD10E80D7F68</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>SettingRootViewController on UIWindow animated</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

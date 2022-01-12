@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>import Foundation
+import CoreLocation
+
+extension UserDefaults {
+
+    private enum Keys: String {
+        case hasOnboarded
+        case locationStatusUpdated
+        case notificationPermissionUpdated
+        case zipCodeAdded
+        case hasGiven
+        case trackingPermissionUpdated
+    }
+
+    static var hasOnboarded: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.hasOnboarded.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.hasOnboarded.rawValue)
+        }
+    }
+    static var zipCodeAdded: String? {
+        get {
+            return UserDefaults.standard.string(forKey: Keys.zipCodeAdded.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.zipCodeAdded.rawValue)
+        }
+    }
+
+    static var notificationPermissionUpdated: Bool? {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.notificationPermissionUpdated.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.notificationPermissionUpdated.rawValue)
+        }
+    }
+
+    static var trackingPermissionUpdated: Bool? {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.trackingPermissionUpdated.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.trackingPermissionUpdated.rawValue)
+        }
+    }
+
+    static var hasGiven: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.hasGiven.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.hasGiven.rawValue)
+        }
+    }
+
+    static var hasShopped: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.hasGiven.rawValue)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.hasGiven.rawValue)
+        }
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>9B9AF163-A1FD-4E29-848B-3395340E9D52</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>UsersDefaultTracking</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

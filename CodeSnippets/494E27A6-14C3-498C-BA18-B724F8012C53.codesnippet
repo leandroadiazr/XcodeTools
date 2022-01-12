@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>   func start(animated: Bool, completion: VoidClosure?) {
+        // Configure window/root view controller
+        window.setRootViewController(baseNavController, animated: false, completion: {
+            self.window.makeKeyAndVisible()
+            // To start the app in potrait mode
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+                UIViewController.attemptRotationToDeviceOrientation()
+            }
+            // Spin off auth coordinator
+            let authCoordinator = AuthCoordinator(self.rootController)
+            authCoordinator.delegate = self
+            self.childCoordinator = authCoordinator
+            authCoordinator.start(animated: animated, completion: completion)
+        })
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>494E27A6-14C3-498C-BA18-B724F8012C53</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ConfigureWindows/RootController</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>class UpdateAppViewController: UIViewController {
+
+    let updateAppView = UpdateAppView()
+    let cardView = CardView()
+
+    weak var delegate: Delegate?
+
+    override func viewDidLoad() {
+        configureView()
+        configureLayout()
+    }
+}
+
+extension UpdateAppViewController {
+
+    private struct Layout {
+        static let edgeInsets = CGFloat(24)
+        static let bottomInsets = CGFloat(100)
+    }
+
+    private func configureView() {
+        view.backgroundColor = Color.Common.black.withAlphaComponent(0.7)
+        updateAppView.updateNowAction = {
+            self.notify(.updateNow)
+        }
+        updateAppView.cancelAction = {
+            self.notify(.cancel)
+        }
+        cardView.configureWithView(updateAppView)
+        view.addSubview(cardView)
+    }
+
+    private func configureLayout() {
+        cardView.edgeAnchors &gt;= view.edgeAnchors + Layout.edgeInsets
+        cardView.centerXAnchor == view.centerXAnchor
+        cardView.bottomAnchor == view.bottomAnchor - Layout.bottomInsets
+    }
+}
+
+extension UpdateAppViewController: Actionable {
+    enum Action {
+        case updateNow
+        case cancel
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>09E6AE10-1C5D-460B-A208-DA63849BDA6D</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Update ViewController</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

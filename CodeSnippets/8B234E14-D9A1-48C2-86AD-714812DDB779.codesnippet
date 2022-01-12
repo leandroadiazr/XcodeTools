@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>ChangeDeviceOrientation</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>@objc func deviceOrientationChanged() {
+        // To check for logged in users with rewards number
+        if let userInfo = viewModel.userInfo, userInfo.rewardsNumber != nil {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft, .landscapeRight:
+                guard let currentViewController = ((baseController.navigationController?.viewControllers.last as? ContentTabBarViewController)?.selectedViewController as? UINavigationController)?.viewControllers.last,
+                        baseController.presentedViewController == nil  else {
+                            changeOrientationToPotrait()
+                            return
+                    }
+                    if  currentViewController is HomeLandingViewController ||
+                        currentViewController is RewardsLandingViewController  ||
+                        currentViewController is RewardsUnenrolledLandingViewController ||
+                        currentViewController is StoreLandingViewController ||
+                        currentViewController is ListsViewController ||
+                        currentViewController is ProfileViewController {
+                            srwController.delegate = self
+                            srwController.contentViewModel = viewModel
+                            srwController.modalPresentationStyle = .overFullScreen
+                            baseController.navigationController?.present(srwController, animated: true, completion: nil)
+                    } else {
+                        changeOrientationToPotrait()
+                    }
+            case .portrait:
+                if baseController.presentedViewController == srwController {
+                    srwController.dismiss(animated: true, completion: nil)
+                }
+            default:
+                break
+            }
+        } else {
+           changeOrientationToPotrait()
+        }
+    }
+
+    func changeOrientationToPotrait() {
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>8B234E14-D9A1-48C2-86AD-714812DDB779</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ChangeDeviceOrientation</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
