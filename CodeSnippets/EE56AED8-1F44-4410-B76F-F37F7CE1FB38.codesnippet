@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>    func checkForVersionUpdate() {
+        DispatchQueue.global().async {
+            let isUpdateAvailable = self.viewModel.checkIfNewVersionIsAvailable()
+            DispatchQueue.main.async {
+                if isUpdateAvailable == true {
+                    let updateAppController = UpdateAppViewController()
+                    updateAppController.modalTransitionStyle = .crossDissolve
+                    updateAppController.modalPresentationStyle = .overFullScreen
+                    updateAppController.delegate = self
+                    self.contentTabBarViewController.present(updateAppController, animated: true, completion: nil)
+                }
+            }
+        }
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>EE56AED8-1F44-4410-B76F-F37F7CE1FB38</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Check for Version Update Caller</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

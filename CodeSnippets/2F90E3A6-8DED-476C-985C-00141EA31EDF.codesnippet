@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -&gt; Bool {
+    if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+        self.handleIncomingLink(url: dynamicLink.url)
+    } else if url.absoluteString == "com.staplesconnect://authorized" {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        self.window = window
+        // To display all UI elements in dark mode same as light mode
+        if #available(iOS 13.0, *) {
+            window.overrideUserInterfaceStyle = .light
+        }
+        self.coordinator = AppCoordinator(window: window)
+        coordinator.start(animated: true, completion: {
+        })
+    }
+    return true
+}
+
+func parseDynamicLink(incomingURL: URL) -&gt; Bool {
+    let handled = DynamicLinks.dynamicLinks()
+        .handleUniversalLink(incomingURL) { dynamiclink, error in
+            guard error == nil else {
+                return
+            }
+            if let dynamicLink = dynamiclink {
+                self.handleIncomingLink(url: dynamicLink.url)
+            }
+        }
+    return handled
+}
+
+var dynamicLinkCredentials: OAuthClient.Credentials? {
+    didSet {
+        if let dynamicLinkCredentials = dynamicLinkCredentials {
+            client.oauthClient.setCredentials(credentials: dynamicLinkCredentials)
+        }
+    }
+}
+
+NotificationCenter.default.addObserver(self,
+                                       selector: #selector(goToFeaturedList(_:)),
+                                       name: Notification.Name.GoToFeaturedList,
+                                       object: nil)
+
+// Check if launched from notification
+ if let notificationOption = launchOptions?[.remoteNotification],
+    let notification = notificationOption as? [String: AnyObject],
+    let _ = notification["aps"] as? [String: AnyObject] {
+     if let dynamicLink = notification["dynamicLink"] as? String {
+
+         if dynamicLink.contains(AppConstants.home) {
+             coordinator.navigateToTab = TabBar.Home.rawValue
+         } else if dynamicLink.contains(AppConstants.rewards) {
+             coordinator.navigateToTab = TabBar.Rewards.rawValue
+         } else if dynamicLink.contains(AppConstants.lists) {
+             coordinator.navigateToTab = TabBar.Lists.rawValue
+         } else if dynamicLink.contains(AppConstants.stores) {
+             coordinator.navigateToTab = TabBar.Stores.rawValue
+         } else if dynamicLink.contains(AppConstants.productCategory) {
+             coordinator.navigateToTab = TabBar.Home.rawValue
+             // MARK: - Go to product category
+             UserDefaults.standard.setValue(dynamicLink, forKey: Notification.Name.RemoteNotificationFromLaunch)
+         } else if dynamicLink.contains(AppConstants.product) {
+             coordinator.navigateToTab = TabBar.Home.rawValue
+             // MARK: - Go to product
+             UserDefaults.standard.setValue(dynamicLink, forKey: Notification.Name.RemoteNotificationFromLaunch)
+         } else if dynamicLink.contains(AppConstants.featuredList) {
+             coordinator.navigateToTab = TabBar.Lists.rawValue
+             // MARK: - Go to featured list
+             if let url = URL(string: dynamicLink),
+                 let components = URLComponents(url: url, resolvingAgainstBaseURL: true) {
+                 if let queryItems = components.queryItems {
+                     let queryItem = queryItems[0]
+                     if queryItem.name == "listName" {
+                         if let value = queryItem.value {
+                             let featuredListName = value.replacingOccurrences(of: "+", with: " ")
+                             UserDefaults.standard.setValue(featuredListName, forKey: Notification.Name.FeaturedListKey.rawValue)
+                         }
+                     }
+                 }
+             }
+         }
+     }
+
+    let activityKey = NSString(string: "UIApplicationLaunchOptionsUserActivityKey")
+    if let userActivityDict = launchOptions?[.userActivityDictionary] as? [NSObject: AnyObject],
+       let userActivity = userActivityDict[activityKey] as? NSUserActivity {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb, let incomingURL = userActivity.webpageURL {
+
+            appLaunchedFromDeepLink = true
+
+            _ = parseDynamicLink(incomingURL: incomingURL)
+
+        }
+    }
+    UNUserNotificationCenter.current().getNotificationSettings { settings in
+      guard settings.authorizationStatus == .authorized else { return }
+      DispatchQueue.main.async {
+        UIApplication.shared.registerForRemoteNotifications()
+      }
+    }
+    return true
+
+
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -&gt; Void) -&gt; Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingURL = userActivity.webpageURL else {
+            return false
+        }
+
+        let handled = parseDynamicLink(incomingURL: incomingURL)
+
+        if !handled {
+            // In case we recieve a universal link directly
+            handleIncomingLink(url: incomingURL)
+        }
+        return true
+    }
+
+    func parseDynamicLink(incomingURL: URL) -&gt; Bool {
+        let handled = DynamicLinks.dynamicLinks()
+            .handleUniversalLink(incomingURL) { dynamiclink, error in
+                guard error == nil else {
+                    return
+                }
+                if let dynamicLink = dynamiclink {
+                    self.handleIncomingLink(url: dynamicLink.url)
+                }
+            }
+        return handled
+    }
+
+    func handleIncomingLink(url: URL?) {
+        guard let url = url,
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return
+        }
+
+        // Case 1: If app is launched from background state and user was logged in
+        if let contentCoordinator = coordinator.childCoordinator as? ContentCoordinator {
+            if components.path.contains(AppConstants.home) {
+                contentCoordinator.switchToTab(tabNumber: TabBar.Home.rawValue)
+            } else if components.path.contains(AppConstants.rewards) {
+                contentCoordinator.switchToTab(tabNumber: TabBar.Rewards.rawValue)
+            } else if components.path.contains(AppConstants.lists) {
+                contentCoordinator.switchToTab(tabNumber: TabBar.Lists.rawValue)
+            } else if components.path.contains(AppConstants.stores) {
+                contentCoordinator.switchToTab(tabNumber: TabBar.Stores.rawValue)
+            } else if components.path.contains(AppConstants.productCategory) {
+                // MARK: - Go to product category
+                if let queryItems = components.queryItems {
+                    let queryItem = queryItems[0]
+                    if queryItem.name == "name" {
+                        if let value = queryItem.value {
+                            let categoryName = value.replacingOccurrences(of: "+", with: " ")
+                            if appLaunchedFromDeepLink {
+                                appLaunchedFromDeepLink = false
+                                UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Home.rawValue)
+                            } else {
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Home.rawValue)
+                                let userInfo = [AppConstants.deepLinkProductCategoryUserInfo: categoryName]
+                                NotificationCenter.default.post(name: Notification.Name.GoToBrowseCategory, object: nil, userInfo: userInfo)
+                            }
+                        }
+                    }
+                }
+            } else if components.path.contains(AppConstants.product) {
+                // MARK: - Go to product
+                if let queryItems = components.queryItems {
+                    let queryItem = queryItems[0]
+                    if queryItem.name == "sku" {
+                        if let value = queryItem.value {
+                            let sku = value.replacingOccurrences(of: "+", with: " ")
+                            if appLaunchedFromDeepLink {
+                                appLaunchedFromDeepLink = false
+                                UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Home.rawValue)
+                            } else {
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Home.rawValue)
+                                let userInfo = [AppConstants.deepLinkProductUserInfo: sku]
+                                NotificationCenter.default.post(name: Notification.Name.GoToProduct, object: nil, userInfo: userInfo)
+                            }
+                        }
+                    }
+                }
+            } else if components.path.contains(AppConstants.featuredList) {
+                // MARK: - Go to featured List
+                if let queryItems = components.queryItems {
+                    let queryItem = queryItems[0]
+                    if queryItem.name == "listName" {
+                        if let value = queryItem.value {
+                            let featuredListName = value.replacingOccurrences(of: "+", with: " ")
+                            if appLaunchedFromDeepLink {
+                                appLaunchedFromDeepLink = false
+                                UserDefaults.standard.setValue(featuredListName, forKey: Notification.Name.FeaturedListKey.rawValue)
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Lists.rawValue)
+                            } else {
+                                contentCoordinator.switchToTab(tabNumber: TabBar.Lists.rawValue)
+                                let userInfo = [AppConstants.deepLinkFeaturedListUserInfo: featuredListName]
+                                NotificationCenter.default.post(name: Notification.Name.GoToFeaturedList, object: nil, userInfo: userInfo)
+                            }
+                        }
+                    }
+                }
+            }
+        } else if let queryItems = components.queryItems,
+            let accessToken = queryItems.filter({$0.name == "access_token"}).first?.value,
+            let refreshToken = queryItems.filter({$0.name == "refreshToken"}).first?.value,
+            let expirationTime = Double(queryItems.filter({$0.name == "expirationTime"}).first?.value ?? "0.0") {
+
+            // Case 2: If app is launched from background state and user was not logged in
+            if let presented = UIApplication.shared.keyWindow?.rootViewController?.presentedViewController, (presented is SFSafariViewController || presented is DeclineSigninViewController) {
+
+                presented.dismiss(animated: true) { [weak self] in
+                    self?.coordinator.dynamicLinkCredentials = APIClient.shared.oauthClient.createCredentials(refreshToken: refreshToken, accessToken: accessToken, expirationDate: Date(timeIntervalSinceNow: expirationTime))
+                    if components.path.contains(AppConstants.home) {
+                        self?.coordinator.navigateToTab = TabBar.Home.rawValue
+                    } else if components.path.contains(AppConstants.rewards) {
+                        self?.coordinator.navigateToTab = TabBar.Rewards.rawValue
+                    } else if components.path.contains(AppConstants.lists) {
+                        self?.coordinator.navigateToTab = TabBar.Lists.rawValue
+                    } else if components.path.contains(AppConstants.stores) {
+                        self?.coordinator.navigateToTab = TabBar.Stores.rawValue
+                    } else if components.path.contains(AppConstants.productCategory) {
+                        // MARK: - Go to product category
+                        if let queryItems = components.queryItems {
+                            let queryItem = queryItems[0]
+                            if queryItem.name == "name" {
+                                if let value = queryItem.value {
+                                    let categoryName = value.replacingOccurrences(of: "+", with: " ")
+                                    if ((self?.appLaunchedFromDeepLink) != nil) {
+                                        self?.appLaunchedFromDeepLink = false
+                                        UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                        self?.coordinator.navigateToTab = TabBar.Home.rawValue
+                                    } else {
+                                        self?.coordinator.navigateToTab = TabBar.Home.rawValue
+                                        let userInfo = [AppConstants.deepLinkProductCategoryUserInfo: categoryName]
+                                        NotificationCenter.default.post(name: Notification.Name.GoToBrowseCategory, object: nil, userInfo: userInfo)
+                                    }
+                                }
+                            }
+                        }
+                    } else if components.path.contains(AppConstants.product) {
+                        // MARK: - Go to product
+                        if let queryItems = components.queryItems {
+                            let queryItem = queryItems[0]
+                            if queryItem.name == "sku" {
+                                if let value = queryItem.value {
+                                    let sku = value.replacingOccurrences(of: "+", with: " ")
+                                    if self?.appLaunchedFromDeepLink != nil {
+                                        self?.appLaunchedFromDeepLink = false
+                                        UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                        self?.coordinator.navigateToTab = TabBar.Home.rawValue
+                                    } else {
+                                        self?.coordinator.navigateToTab = TabBar.Home.rawValue
+                                        let userInfo = [AppConstants.deepLinkProductUserInfo: sku]
+                                        NotificationCenter.default.post(name: Notification.Name.GoToProduct, object: nil, userInfo: userInfo)
+                                    }
+                                }
+                            }
+                        }
+                    } else if components.path.contains(AppConstants.featuredList) {
+                        // MARK: - Go to featured List
+                        if let queryItems = components.queryItems {
+                            let queryItem = queryItems[0]
+                            if queryItem.name == "listName" {
+                                if let value = queryItem.value {
+                                    let featuredListName = value.replacingOccurrences(of: "+", with: " ")
+                                    if ((self?.appLaunchedFromDeepLink) != nil) {
+                                        self?.appLaunchedFromDeepLink = false
+                                        UserDefaults.standard.setValue(featuredListName, forKey: Notification.Name.FeaturedListKey.rawValue)
+                                        self?.coordinator.navigateToTab = TabBar.Lists.rawValue
+                                    } else {
+                                        self?.coordinator.navigateToTab = TabBar.Lists.rawValue
+                                        let userInfo = [AppConstants.deepLinkFeaturedListUserInfo: featuredListName]
+                                        NotificationCenter.default.post(name: Notification.Name.GoToFeaturedList, object: nil, userInfo: userInfo)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Case 3: If app is launched from terminated state and user was not logged in
+                APIClient.shared.oauthClient.cancelAuthSession()
+                self.coordinator.dynamicLinkCredentials = APIClient.shared.oauthClient.createCredentials(refreshToken: refreshToken, accessToken: accessToken, expirationDate: Date(timeIntervalSinceNow: expirationTime))
+                //self.coordinator.navigateToTab = components.path.contains(AppConstants.rewards) ? TabBar.Rewards.rawValue : TabBar.Home.rawValue
+                if components.path.contains(AppConstants.home) {
+                    self.coordinator.navigateToTab = TabBar.Home.rawValue
+                } else if components.path.contains(AppConstants.rewards) {
+                    self.coordinator.navigateToTab = TabBar.Rewards.rawValue
+                } else if components.path.contains(AppConstants.lists) {
+                    self.coordinator.navigateToTab = TabBar.Lists.rawValue
+                } else if components.path.contains(AppConstants.stores) {
+                    self.coordinator.navigateToTab = TabBar.Stores.rawValue
+                } else if components.path.contains(AppConstants.productCategory) {
+                    // MARK: - Go to product category
+                    if let queryItems = components.queryItems {
+                        let queryItem = queryItems[0]
+                        if queryItem.name == "name" {
+                            if let value = queryItem.value {
+                                let categoryName = value.replacingOccurrences(of: "+", with: " ")
+                                if appLaunchedFromDeepLink {
+                                    appLaunchedFromDeepLink = false
+                                    UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                    self.coordinator.navigateToTab = TabBar.Home.rawValue
+                                } else {
+                                    self.coordinator.navigateToTab = TabBar.Home.rawValue
+                                    let userInfo = [AppConstants.deepLinkProductCategoryUserInfo: categoryName]
+                                    NotificationCenter.default.post(name: Notification.Name.GoToBrowseCategory, object: nil, userInfo: userInfo)
+                                }
+                            }
+                        }
+                    }
+                } else if components.path.contains(AppConstants.product) {
+                    // MARK: - Go to product
+                    if let queryItems = components.queryItems {
+                        let queryItem = queryItems[0]
+                        if queryItem.name == "sku" {
+                            if let value = queryItem.value {
+                                let sku = value.replacingOccurrences(of: "+", with: " ")
+                                if appLaunchedFromDeepLink {
+                                    appLaunchedFromDeepLink = false
+                                    UserDefaults.standard.setValue(url.absoluteString, forKey: Notification.Name.RemoteNotificationFromLaunch)
+                                    self.coordinator.navigateToTab = TabBar.Home.rawValue
+                                } else {
+                                    self.coordinator.navigateToTab = TabBar.Home.rawValue
+                                    let userInfo = [AppConstants.deepLinkProductUserInfo: sku]
+                                    NotificationCenter.default.post(name: Notification.Name.GoToProduct, object: nil, userInfo: userInfo)
+                                }
+                            }
+                        }
+                    }
+                } else if components.path.contains(AppConstants.featuredList) {
+                    // MARK: - Go to featured List
+                    if let queryItems = components.queryItems {
+                        let queryItem = queryItems[0]
+                        if queryItem.name == "listName" {
+                            if let value = queryItem.value {
+                                let featuredListName = value.replacingOccurrences(of: "+", with: " ")
+                                if appLaunchedFromDeepLink {
+                                    appLaunchedFromDeepLink = false
+                                    UserDefaults.standard.setValue(featuredListName, forKey: Notification.Name.FeaturedListKey.rawValue)
+                                    self.coordinator.navigateToTab = TabBar.Lists.rawValue
+                                } else {
+                                    self.coordinator.navigateToTab = TabBar.Lists.rawValue
+                                    let userInfo = [AppConstants.deepLinkFeaturedListUserInfo: featuredListName]
+                                    NotificationCenter.default.post(name: Notification.Name.GoToFeaturedList, object: nil, userInfo: userInfo)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>2F90E3A6-8DED-476C-985C-00141EA31EDF</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>DynamicLinks // DeepLinks</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
