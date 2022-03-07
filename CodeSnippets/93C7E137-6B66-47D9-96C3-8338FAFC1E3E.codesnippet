@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>BubbleExtensions</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>   ///CONFIGURE BACKGROUND COLOR EXPECT 3 PARAMETERS
+    func configureBubbleBackgroundColor(with user: String, name: String, for label: UILabel) -&gt; UIColor {
+         switch user {
+         case "Administrator" :
+             label.textColor = .black
+             label.setRegualAndBoldText(regularString: "Shared by your teacher ", boldString: name, fontSize: 12)
+            label.adjustsFontSizeToFitWidth = true
+             return Color.brandYellow
+         case "Educator" :
+             label.textColor = .black
+             label.setRegualAndBoldText(regularString: "Shared by your teacher ", boldString: name, fontSize: 12)
+            label.adjustsFontSizeToFitWidth = true
+             return Color.brandYellow
+         case "Supporter":
+            label.textColor = .white
+             label.setRegualAndBoldText(regularString: "Shared by ", boldString: name, fontSize: 12)
+            label.adjustsFontSizeToFitWidth = true
+             return  Color.brandCyan
+         default:
+             return .white
+         }
+     }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>93C7E137-6B66-47D9-96C3-8338FAFC1E3E</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>BubbleExtensions</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

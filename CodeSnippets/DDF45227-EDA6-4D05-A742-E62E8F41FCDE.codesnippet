@@ -3,28 +3,35 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>checkFroJailBroken</string>
+	<string>DateToMinHourSecExtensions</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>func applicationDidBecomeActive(_ application: UIApplication) {
-        if detectedJailbroken() {
-            window?.rootViewController?.showAlert(title: L10n.Alert.Error.Rooted.title, body: L10n.Alert.Error.Rooted.body, actionHandler: { fatalError("Application not allowed on jailbroken devices.") })
+	<string> var dateString: String {
+        let interval = Date().timeIntervalSince(self.date)
+        if interval &lt; 3600 {
+            return "\(Int(interval/60))m ago"
+        } else if interval &lt; 24*3600 {
+            return "\(Int(interval/3600))h ago"
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "M.d.yy • h:mma"
+            return dateFormatter.string(from: self.date)
         }
     }</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>032783CD-62EE-4B8F-B3EB-8035F668A6DE</string>
+	<string>DDF45227-EDA6-4D05-A742-E62E8F41FCDE</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Swift</string>
 	<key>IDECodeSnippetSummary</key>
 	<string></string>
 	<key>IDECodeSnippetTitle</key>
-	<string>checkFroJailBroken</string>
+	<string>DateToMinHourSecExtensions</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>
-	<integer>2</integer>
+	<integer>0</integer>
 </dict>
 </plist>

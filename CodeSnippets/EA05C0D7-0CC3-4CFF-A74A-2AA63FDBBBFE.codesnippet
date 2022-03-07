@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>UIColorExtensions</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension UIColor {
+
+    /// Get a "highlighted" version of self, with half the 
+    /// current color's alpha value.
+    var highlighted: UIColor {
+        var currentAlpha = CGFloat(0)
+        if self.getWhite(nil, alpha: &amp;currentAlpha) {
+            return self.withAlphaComponent(currentAlpha / 2)
+        } else {
+            // Fallback to 50% alpha
+            return self.withAlphaComponent(0.5)
+        }
+    }
+
+    static func with(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8 = 255) -&gt; UIColor {
+        return self.init(
+            red: CGFloat(red) / 255.0,
+            green: CGFloat(green) / 255.0,
+            blue: CGFloat(blue) / 255.0,
+            alpha: CGFloat(alpha) / 255.0)
+    }
+
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>EA05C0D7-0CC3-4CFF-A74A-2AA63FDBBBFE</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>UIColorExtensions</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

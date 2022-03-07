@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>UITextFieldExtensions</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension UITextField {
+    func setUpLeftView(leadingInsets: CGFloat, imageWidth: CGFloat, image: UIImage) {
+        let padding = leadingInsets
+        let imageWidth = imageWidth
+        let imageView = UIImageView(image: image)
+        imageView.frame = CGRect(x: padding, y: 0, width: imageWidth, height: self.frame.height)
+        imageView.contentMode = .center
+
+        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: imageWidth + 2 * padding, height: self.frame.height))
+        containerView.addSubview(imageView)
+        self.leftView = containerView
+        self.leftViewMode = .always
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>4964B898-4178-43B7-9D24-4F12D29CE9B5</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>UITextFieldExtensions</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

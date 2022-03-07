@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>UIImageExtensions</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension UIImage {
+
+     func combine(images: [UIImage]) -&gt; UIImage? {
+        guard images.count == 0 else {
+            return nil
+        }
+
+        let combinedImageWidth = CGFloat(1000)
+        let combinedImageHeight = CGFloat(500)
+        let offset = CGFloat(20)
+        let suggestedImageWidth = (combinedImageWidth - (offset * 2)) / 2
+        //let suggestedImageHeight = (combinedImageHeight - (offset * 2)) / 2
+        var posX: CGFloat = offset
+        var posY: CGFloat = offset
+        var imageCount = 0
+        var newImage: UIImage
+        let size = CGSize(width: combinedImageWidth, height: combinedImageHeight)
+        var areaSize: CGRect
+
+        UIGraphicsBeginImageContext(size)
+
+        for image in images {
+            if let resizedImage = resizeWithRatio(image, scaledToWidth: suggestedImageWidth) {
+                if imageCount % 2 == 0  {
+                    areaSize = CGRect(x: posX, y: posY, width: resizedImage.size.width, height: resizedImage.size.height)
+                    posX += posX + resizedImage.size.width + (offset * 2)
+                } else {
+                    areaSize = CGRect(x: posX, y: posY, width: resizedImage.size.width, height: resizedImage.size.height)
+                    posY += posY + resizedImage.size.height + (offset * 2)
+                }
+                resizedImage.draw(in: areaSize)
+            }
+            imageCount += imageCount + 1
+        }
+
+        newImage = UIGraphicsGetImageFromCurrentImageContext()!
+
+        UIGraphicsEndImageContext()
+
+        return newImage
+    }
+
+     func resizeWithRatio(_ sourceImage: UIImage, scaledToWidth: CGFloat) -&gt; UIImage? {
+        let oldWidth = sourceImage.size.width;
+        let scaleFactor = scaledToWidth / oldWidth
+
+        let newHeight = sourceImage.size.height * scaleFactor
+
+        let newWidth = oldWidth * scaleFactor
+
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+
+        sourceImage.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext();
+        return newImage
+
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>329158AC-45DD-43A1-BD7F-A3C86393871C</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>UIImageExtensions</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

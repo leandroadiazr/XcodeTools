@@ -3,28 +3,32 @@
 <plist version="1.0">
 <dict>
 	<key>IDECodeSnippetCompletionPrefix</key>
-	<string>checkFroJailBroken</string>
+	<string>UIImageViewExtensions</string>
 	<key>IDECodeSnippetCompletionScopes</key>
 	<array>
 		<string>All</string>
 	</array>
 	<key>IDECodeSnippetContents</key>
-	<string>func applicationDidBecomeActive(_ application: UIApplication) {
-        if detectedJailbroken() {
-            window?.rootViewController?.showAlert(title: L10n.Alert.Error.Rooted.title, body: L10n.Alert.Error.Rooted.body, actionHandler: { fatalError("Application not allowed on jailbroken devices.") })
-        }
-    }</string>
+	<string>extension UIImageView {
+    func customRoundCorners(corners: UIRectCorner, radius: CGFloat) -&gt; CGPath {
+        let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        self.layer.mask = mask
+        return path.cgPath
+    }
+}</string>
 	<key>IDECodeSnippetIdentifier</key>
-	<string>032783CD-62EE-4B8F-B3EB-8035F668A6DE</string>
+	<string>157F4197-CE49-4118-B762-1AD084492A1A</string>
 	<key>IDECodeSnippetLanguage</key>
 	<string>Xcode.SourceCodeLanguage.Swift</string>
 	<key>IDECodeSnippetSummary</key>
 	<string></string>
 	<key>IDECodeSnippetTitle</key>
-	<string>checkFroJailBroken</string>
+	<string>UIImageViewExtensions</string>
 	<key>IDECodeSnippetUserSnippet</key>
 	<true/>
 	<key>IDECodeSnippetVersion</key>
-	<integer>2</integer>
+	<integer>0</integer>
 </dict>
 </plist>

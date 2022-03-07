@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>twoActionsNotificationPopUp</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>class NotificationPopup: UIViewController, UIGestureRecognizerDelegate {
+    struct Layout {
+        static let imageHeightValue = CGFloat(332)
+        static let ctaHeight = CGFloat(40)
+        static let buttonHeight = CGFloat(40)
+    }
+
+    private enum Style {
+        static let cardCornerRadius: CGFloat = CGFloat(15)
+    }
+
+    let containerview = CustomAlertContainer()
+    let screenSize = UIScreen.main.bounds
+
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = Fonts.Title.boldTitle3.font
+        return label
+    }()
+
+    private lazy var imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Asset.Images.promoImage.image
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = Style.cardCornerRadius
+        return imageView
+    }()
+
+    private lazy var messageLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 4
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        label.font = Fonts.Body.body4regular15.font
+        label.adjustsFontSizeToFitWidth = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private lazy var dateLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.font = Fonts.Body.boldStyle.font
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(Asset.Images.iconCloseSolid.image, for: .normal)
+        button.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
+        button.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "close")
+        return button
+    }()
+
+
+    private lazy var actionButtonOne: UIButton = {
+        let button = BetterButton.init(shape: .pill, style: .solid(backgroundColor: Color.brandRed, foregroundColor: Color.Common.white))
+        button.bonMotStyle = Fonts.Button.lightMediumStyle
+        button.heightAnchor == Layout.ctaHeight
+        button.addTarget(self, action: #selector(actionTapped), for: .touchUpInside)
+        button.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "enrrol-now")
+        return button
+    }()
+
+    private lazy var actionButtonTwo: UIButton = {
+        let button = UIButton()
+        button.heightAnchor == Layout.buttonHeight
+        button.bonMotStyle = Fonts.Button.blueBoldStyle
+        button.addTarget(self, action: #selector(secondActionTapped), for: .touchUpInside)
+        button.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "terms-&amp;-conditions")
+        return button
+    }()
+
+    var alertTitle: String?
+    var image: UIImage?
+    var downloadImage: URL?
+    var message: String?
+    var buttonTitleOne: String?
+    var customEndDate: String?
+    var buttonTitleTwo: String?
+    var action: (() -&gt; Void)?
+    var secondAction: (() -&gt; Void)?
+
+    init(alertTitle: String, image: UIImage?, downloadImage: URL?, message: String, customEndDate: String?, buttonTitleOne: String, buttonTitleTwo: String?) {
+        super.init(nibName: nil, bundle: nil)
+        self.alertTitle       = alertTitle
+        self.image            = image
+        self.message          = message
+        self.buttonTitleOne   = buttonTitleOne
+        self.buttonTitleTwo   = buttonTitleTwo
+        self.customEndDate    = customEndDate
+        self.downloadImage    = downloadImage
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        configureView()
+        configureMessages()
+    }
+
+    private func configureMessages() {
+        titleLabel.text = alertTitle ?? ""
+        if let image = image {
+            if downloadImage != nil {
+                imageView.sd_setImage(with: downloadImage, placeholderImage: image, options: .forceTransition, context: nil)
+            } else {
+                imageView.image = image
+            }
+            imageView.heightAnchor == Layout.imageHeightValue * 2.5
+            containerview.heightAnchor == screenSize.height / 1.6
+        } else {
+            imageView.heightAnchor == 0
+            containerview.heightAnchor == 250
+        }
+        messageLabel.text = message ?? ""
+        messageLabel.setRegualAndBoldText(regularString: message ?? "", boldString: " \(customEndDate ?? "")", fontSize: 14 )
+        actionButtonOne.styledText = buttonTitleOne
+        actionButtonTwo.styledText = buttonTitleTwo
+    }
+
+    private func configureView() {
+        containerview.addSubview(closeButton)
+        containerview.addSubview(titleLabel)
+        containerview.addSubview(messageLabel)
+        containerview.addSubview(imageView)
+        containerview.addSubview(actionButtonOne)
+        containerview.addSubview(actionButtonTwo)
+        view.addSubview(containerview)
+        setupConstraints()
+    }
+
+    @objc func actionTapped() {
+        self.dismissVC()
+        self.action?()
+    }
+
+    @objc func secondActionTapped() {
+        self.dismissVC()
+        self.secondAction?()
+    }
+
+    @objc func dismissVC() {
+        dismiss(animated: true)
+    }
+
+    private func setupConstraints() {
+        let padding: CGFloat = 15
+        //Container View Constraints
+        containerview.centerYAnchor == view.centerYAnchor
+        containerview.centerXAnchor == view.centerXAnchor
+        containerview.widthAnchor == screenSize.width - 45
+
+        closeButton.topAnchor == containerview.topAnchor + padding
+        closeButton.trailingAnchor == containerview.trailingAnchor - padding
+        closeButton.heightAnchor == 30
+
+        //Title Label Constraints
+        titleLabel.topAnchor == closeButton.bottomAnchor
+        titleLabel.centerXAnchor == containerview.centerXAnchor
+        titleLabel.heightAnchor == 20
+
+        //Message Label Constraints
+        messageLabel.topAnchor == titleLabel.bottomAnchor
+        messageLabel.leadingAnchor == containerview.leadingAnchor + padding * 2
+        messageLabel.trailingAnchor == containerview.trailingAnchor  - padding * 2
+        messageLabel.heightAnchor == 90
+
+        imageView.topAnchor == messageLabel.bottomAnchor + 5
+        imageView.leadingAnchor == containerview.leadingAnchor + padding * 2
+        imageView.trailingAnchor == containerview.trailingAnchor - padding * 2
+
+
+        actionButtonOne.topAnchor == imageView.bottomAnchor + padding
+        actionButtonOne.leadingAnchor == containerview.leadingAnchor + padding * 2
+        actionButtonOne.trailingAnchor == containerview.trailingAnchor - padding * 2
+
+        actionButtonTwo.topAnchor == actionButtonOne.bottomAnchor + 5
+        actionButtonTwo.bottomAnchor == containerview.bottomAnchor - padding
+        actionButtonTwo.leadingAnchor == containerview.leadingAnchor + padding * 2
+        actionButtonTwo.trailingAnchor == containerview.trailingAnchor - padding * 2
+        actionButtonTwo.heightAnchor == 44
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>FB83F29A-4215-4703-98F4-D5181E22915C</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>twoActionsNotificationPopUp</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>StringsExtensions</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>let basicPhoneFormat = "(XXX) XXX-XXXX"
+let rawPhoneFormat = "XXXXXXXXXX"
+
+extension String {
+    
+    var htmlAttributedString: NSAttributedString? {
+        return try? NSAttributedString(data: Data(utf8), options: [.documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue,], documentAttributes: nil)
+    }
+
+    func htmlDecodedString() -&gt; String {
+         return (self.replacingOccurrences(of: "\"", with: "")
+                .replacingOccurrences(of: "&lt;lt/&gt;", with: "&lt;")
+                .replacingOccurrences(of: "&lt;gt/&gt;", with: "&gt;"))
+                .replacingOccurrences(of: "\n", with: "&lt;br/&gt;")
+    }
+
+    func bulletedString(_ bulletIndicator: String = "•",
+                        spaceCount: Int = 2) -&gt; NSAttributedString {
+        let bullet = bulletIndicator + String(repeating: " ", count: spaceCount)
+        let bulletedStr = (bullet + self.htmlDecodedString())
+        return bulletedStr.htmlAttributedString ?? NSAttributedString.init(string: self)
+    }
+
+    // Without country code
+    func toPhoneNumber() -&gt; String {
+        return self.replacingOccurrences(of: "(\\d{3})(\\d{3})(\\d+)", with: "($1)$2-$3", options: .regularExpression, range: nil)
+    }
+
+    func isValidEmail() -&gt; Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailTest = NSPredicate(format: "SELF MATCHES[c] %@", emailRegEx)
+        return emailTest.evaluate(with: self)
+    }
+
+    func isValidPhoneNumber(formatLength: Int = basicPhoneFormat.count) -&gt; Bool {
+        // FIXME: Update once confirmed
+        if self.count != formatLength {
+            return false
+        }
+        return true
+    }
+// With country code
+    /// mask example: `(XXX) XXX-XXXX`
+    func formatPhoneNumber(with mask: String = basicPhoneFormat) -&gt; String {
+        let numbers = self.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+        var result = ""
+        var index = numbers.startIndex // numbers iterator
+
+        // iterate over the mask characters until the iterator of numbers ends
+        for ch in mask where index &lt; numbers.endIndex {
+            if ch == "X" {
+                // mask requires a number in this place, so take the next one
+                result.append(numbers[index])
+
+                // move numbers iterator to the next index
+                index = numbers.index(after: index)
+
+            } else {
+                result.append(ch) // just append a mask character
+            }
+        }
+        return result
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>23F185C7-432B-4332-9C81-CBF453F49A1B</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>StringsExtensions</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>EndPointGroup</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>  func getLists(completion: @escaping VoidClosure) {
+        APIClient.shared.lists() { [weak self] result in
+            switch result {
+            case .success(let response?):
+                let sharedList = response.filter({ $0.sharedBy != nil })
+                self?.sharedLists = sharedList
+                self?.listVC.viewModel?.sharedLists = self?.sharedLists
+
+                let list = response.filter({$0.sharedBy == nil })
+                self?.lists = list
+                self?.listVC.collectionView?.reloadData()
+            case .success:
+                print(L10n.Alert.Error.noResponse)
+            case .failure:
+                print(L10n.Alert.Error.Unknown.body)
+            }
+            completion()
+        }
+    }
+
+    // Get Lists
+    public func lists(completion: @escaping (Result&lt;ListsResponse?, AFError&gt;) -&gt; Void) {
+        let listsEndpoint = ListsEndpoint()
+        request(listsEndpoint, completion: completion)
+    }
+
+    public struct UpdateListEndpoint: APIEndpoint {
+        var listId: Int
+        var listName: String?
+        var listDescription: String?
+        var sequence: Float?
+
+        public typealias ResponseType = ListsUpdateResponse
+        public var path: String {
+            return APIEnvironment.active.listsPath + "/\(listId)"
+        }
+        public var method: HTTPMethod { return .patch }
+        public var encoding: ParameterEncoding { return ArrayEncoding() }
+        public var parameters: Parameters? {
+            if let sequence = sequence {
+                let paramArray = [ ["op": "Replace",
+                                    "path": "/sequence",
+                                    "value": sequence,],]
+                return paramArray.asParameters()
+            } else {
+                let paramArray = [ ["op": "Replace",
+                                    "path": "/productListName",
+                                    "value": listName,],
+                                   ["op": "Replace",
+                                    "path": "/description",
+                                    "value": listDescription,],]
+                return paramArray.asParameters()
+            }
+        }
+    }
+
+    public struct ListsEndpoint: APIEndpoint {
+        public typealias ResponseType = ListsResponse
+        public var path: String {
+            return APIEnvironment.active.listsPath
+        }
+        public var method: HTTPMethod { return .get }
+        public var encoding: ParameterEncoding { return URLEncoding.default }
+        public var parameters: Parameters? { return [:] }
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>E367D6F4-DFB9-43CD-AB8D-3B157666183F</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>EndPointGroup</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

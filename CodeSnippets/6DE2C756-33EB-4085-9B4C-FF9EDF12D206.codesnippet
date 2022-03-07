@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>regularBoldString</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension UILabel {
+    public func setRegualAndBoldText(regularString: String, boldString: String, fontSize: CGFloat?) {
+        let boldAttrs = [NSAttributedString.Key.font : UIFont.init(family: Fonts.Family.bold, size: fontSize ?? 14 + 1)]
+        let regularStringAttrs = [NSAttributedString.Key.font : UIFont.init(family: Fonts.Family.regular, size: fontSize ?? 14)]
+        let regularString = NSMutableAttributedString(string: regularString, attributes: regularStringAttrs)
+        let boldString = NSMutableAttributedString(string: boldString, attributes : boldAttrs)
+        regularString.append(boldString)
+        attributedText = regularString
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>6DE2C756-33EB-4085-9B4C-FF9EDF12D206</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>regularBoldString</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

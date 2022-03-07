@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>twoActionsNotificationPopUpCaller</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>   func showNotification(title: String, image: UIImage?, downloadImage: URL?, message: String, donationDate: String?, buttonTitleOne: String, buttonTitleTwo: String?, completion: @escaping () -&gt; Void, secondCompletion: @escaping () -&gt; Void) {
+        DispatchQueue.main.async {
+            let alertVC = NotificationPopup(alertTitle: title, image: image, downloadImage: downloadImage, message: message, customEndDate: donationDate, buttonTitleOne: buttonTitleOne, buttonTitleTwo: buttonTitleTwo)
+            alertVC.modalPresentationStyle   = .overFullScreen
+            alertVC.modalTransitionStyle     = .crossDissolve
+            alertVC.action                   = completion
+            alertVC.secondAction             = secondCompletion
+            self.present(alertVC, animated: true)
+        }
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>634914A7-8EE7-4433-A3B4-5C4318515D3F</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>twoActionsNotificationPopUpCaller</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

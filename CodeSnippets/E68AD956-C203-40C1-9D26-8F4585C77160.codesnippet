@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>CustomOverlayText</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>    func addOverlayView(bannerText: String) {
+        let overlayBannerView = OverlayBannerView()
+        overlayBannerView.frame = CGRect.init(x: 0, y: 0, width: self.view.frame.size.width, height: 144)
+        overlayBannerView.bannerText = bannerText
+        overlayBannerView.alpha = 0.8
+        self.view.addSubview(overlayBannerView)
+        UIView.animate(withDuration: AppConstants.bannerViewTimeout , delay: AppConstants.bannerViewDelay, animations: { () -&gt; Void in
+            overlayBannerView.alpha = 0
+        })
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>E68AD956-C203-40C1-9D26-8F4585C77160</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>CustomOverlayText</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
