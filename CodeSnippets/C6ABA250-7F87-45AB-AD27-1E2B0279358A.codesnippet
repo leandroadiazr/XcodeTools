@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>Regular/Bold Text Extension</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>extension UILabel {
+    //SETS REGULAR FIRST AND BOLD SECOND
+    public func setRegularAndBoldText(regularString: String, boldString: String, fontSize: CGFloat?) {
+        let boldAttrs = [NSAttributedString.Key.font :  UIFont.systemFont(ofSize: fontSize ?? 15, weight: .bold)]
+        let regularStringAttrs = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: fontSize ?? 13, weight: .regular)]
+        let regularString = NSMutableAttributedString(string: regularString, attributes: regularStringAttrs)
+        let boldString = NSMutableAttributedString(string: boldString, attributes : boldAttrs)
+        regularString.append(boldString)
+        attributedText = regularString
+    }
+    
+    //SETS BOLD FIRST AND REGULAR SECOND
+    public func setBoldAndRegularText(boldString: String, regularString: String, fontSize: CGFloat?) {
+        let boldAttrs = [NSAttributedString.Key.font :  UIFont.systemFont(ofSize: fontSize ?? 15, weight: .bold)]
+        let regularStringAttrs = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: fontSize ?? 13, weight: .regular)]
+        let boldString = NSMutableAttributedString(string: boldString, attributes : boldAttrs)
+        let regularString = NSMutableAttributedString(string: regularString, attributes: regularStringAttrs)
+        boldString.append(regularString)
+        attributedText = boldString
+    }
+}</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>C6ABA250-7F87-45AB-AD27-1E2B0279358A</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>Regular/Bold Text Extension</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

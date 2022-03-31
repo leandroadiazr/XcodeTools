@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>DeviceTypeHelper</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>enum ScreenSize {
+    static let width        = UIScreen.main.bounds.size.width
+    static let height       = UIScreen.main.bounds.size.height
+    static let maxLength    = max(ScreenSize.width, ScreenSize.height)
+    static let minLength    = min(ScreenSize.width, ScreenSize.height)
+}
+
+enum DeviceTypes {
+    static let idiom                    = UIDevice.current.userInterfaceIdiom
+    static let nativeScale              = UIScreen.main.nativeScale
+    static let scale                    = UIScreen.main.scale
+
+    static let isiPhoneSE               = idiom == .phone &amp;&amp; ScreenSize.maxLength == 568.0
+    static let isiPhone8Standard        = idiom == .phone &amp;&amp; ScreenSize.maxLength == 667.0 &amp;&amp; nativeScale == scale
+    static let isiPhone8Zoomed          = idiom == .phone &amp;&amp; ScreenSize.maxLength == 667.0 &amp;&amp; nativeScale &gt; scale
+    static let isiPhone8PlusStandard    = idiom == .phone &amp;&amp; ScreenSize.maxLength == 736.0
+    static let isiPhone8PlusZoomed      = idiom == .phone &amp;&amp; ScreenSize.maxLength == 736.0 &amp;&amp; nativeScale &lt; scale
+    static let isiPhoneX                = idiom == .phone &amp;&amp; ScreenSize.maxLength == 812.0
+    static let isiPhoneXsMaxAndXr       = idiom == .phone &amp;&amp; ScreenSize.maxLength == 896.0
+    static let isiPad                   = idiom == .pad &amp;&amp; ScreenSize.maxLength &gt;= 1024.0
+
+    static func isiPhoneXAspectRatio() -&gt; Bool {
+        return isiPhoneX || isiPhoneXsMaxAndXr
+    }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>5B786BBF-66BF-45C3-B190-F010DCE62227</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>DeviceTypeHelper</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
