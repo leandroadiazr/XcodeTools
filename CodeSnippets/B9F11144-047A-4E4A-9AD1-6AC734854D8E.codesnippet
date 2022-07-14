@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  PurchasesViewController.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 7/12/22.
+//
+
+import UIKit
+import Anchorage
+
+enum PurchaseSections: Int, CaseIterable {
+    case filtersSecion, mainSection
+}
+
+class PurchasesViewController: UIViewController {
+
+    var filtersSection = [PurchaseFilters(isExpanded: false, filterName: "Last 3 months"),
+                          PurchaseFilters(isExpanded: false, filterName: "Last 6 months"),
+                          PurchaseFilters(isExpanded: false, filterName: "2021"),
+                          PurchaseFilters(isExpanded: false, filterName: "2020"),
+                          PurchaseFilters(isExpanded: false, filterName: "2019"),
+                          PurchaseFilters(isExpanded: false, filterName: "2018")]
+
+    var mainSection = ["main1","main1","main1","main1","main1","main1","main1","main1","main1"]
+
+    private lazy var headerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Color.secondaryNeutralBlack
+        view.heightAnchor == 115
+        view.widthAnchor == UIScreen.main.bounds.width
+        return view
+    }()
+
+    private lazy var customBackButton: UIButton = {
+        let button = UIButton()
+        button.heightAnchor == 50
+        button.widthAnchor == 50
+        button.tintColor = .white
+        button.titleLabel?.font = NewFonts.H3.H3BoldWhite.font
+        button.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        return button
+    }()
+
+    private lazy var historyLabel: UILabel = {
+        let label = UILabel()
+        label.font = NewFonts.H3.H3Bold.font
+        label.textAlignment = .center
+        label.text = "Purchase History"
+        label.numberOfLines = 0
+        label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "history-label")
+        label.textColor = Color.Common.white
+        return label
+    }()
+
+    private lazy var filtersTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .systemGray
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+
+    lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        collectionView.frame = CGRect(x: 0, y: 116, width: view.bounds.width, height: view.bounds.height - 200)
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.backgroundColor = .white
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+        configureViews()
+    }
+
+    private func configureViews() {
+        headerView.addSubview(customBackButton)
+        headerView.addSubview(historyLabel)
+        view.addSubview(headerView)
+        view.addSubview(collectionView)
+        configureCollectionView()
+        configureLayouts()
+    }
+
+    private func configureLayouts() {
+        customBackButton.leadingAnchor == headerView.leadingAnchor + 20
+        customBackButton.centerYAnchor == headerView.centerYAnchor + 20
+
+        historyLabel.centerXAnchor == headerView.centerXAnchor
+        historyLabel.centerYAnchor == customBackButton.centerYAnchor
+
+    }
+
+    @objc func dismissViewController() {
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+
+    // MARK: - Table view data source
+
+}
+
+extension PurchasesViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+
+    func numberOfSections(in collectionView: UICollectionView) -&gt; Int {
+        return PurchaseSections.allCases.count
+
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -&gt; Int {
+        if let currentSection = PurchaseSections(rawValue: section) {
+            switch currentSection {
+            case .filtersSecion:
+                if !filtersSection[section].isExpanded {
+                    return 0
+                }
+                return self.filtersSection.count
+            case .mainSection:
+                return self.mainSection.count
+            }
+        }
+        return 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -&gt; UICollectionViewCell {
+        if let sections = PurchaseSections(rawValue: indexPath.section) {
+            switch sections {
+            case .filtersSecion:
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PurchaseFiltersViewCell.reuseID, for: indexPath)
+                        as? PurchaseFiltersViewCell else { return UICollectionViewCell() }
+                let items = filtersSection[indexPath.item]
+                cell.configureView(with: items)
+
+                cell.backgroundColor = .systemGray5
+                return cell
+
+            case .mainSection:
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PurchaseHistoryViewCell.reuseID, for: indexPath)
+                        as? PurchaseHistoryViewCell else { return UICollectionViewCell() }
+                return cell
+            }
+        }
+        return UICollectionViewCell()
+    }
+
+    // MARK: HEADER
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -&gt; UICollectionReusableView {
+        let sections = PurchaseSections(rawValue: indexPath.section)
+        switch sections {
+        case .mainSection:
+            break
+        case .filtersSecion:
+            switch kind {
+            case UICollectionView.elementKindSectionHeader:
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: PurchasesHeaderView.reuseID, for: indexPath) as? PurchasesHeaderView
+                header?.leftCtaAction = {
+                    self.expandCloseSection()
+                    header?.rightCTAButton.isHidden.toggle()
+                }
+                header?.rightCtaAction = {
+                    self.expandCloseSection()
+                    header?.rightCTAButton.isHidden.toggle()
+                }
+
+                header?.backgroundColor = .white
+                return header!
+
+            case UICollectionView.elementKindSectionFooter:
+                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PurchasesFooterView.reuseID, for: indexPath) as? PurchasesFooterView
+                footer?.configureView(with: nil, amount: 300.00, trailingText: "this year!")
+                return footer!
+            default:
+                return UICollectionReusableView()
+            }
+
+        case .none:
+            return UICollectionReusableView()
+        }
+        return UICollectionReusableView()
+    }
+
+    // MARK: - EXPAND &amp; CLOSE SECTIONS
+    @objc func expandCloseSection() {
+        let section = 0
+        var indexPaths = [IndexPath]()
+        for currentRow in filtersSection.indices {
+            let currentIndexPath = IndexPath(row: currentRow, section: section)
+            indexPaths.append(currentIndexPath)
+        }
+
+        let currentlyExpanded = filtersSection[section].isExpanded
+
+        self.filtersSection[section].isExpanded = !currentlyExpanded
+        if !currentlyExpanded {
+            self.collectionView.insertItems(at: indexPaths)
+        } else {
+            self.collectionView.deleteItems(at: indexPaths)
+        }
+    }
+
+    func createCompositionalLayout() -&gt; UICollectionViewLayout {
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, _ in
+            if let section = PurchaseSections(rawValue: sectionIndex) {
+                switch section {
+                case .filtersSecion:
+                    return self.createFiltersSection(using: sectionIndex)
+                case .mainSection:
+                    return self.createMainSection(using: sectionIndex)
+                }
+            }
+            return self.createEmptySection(using: sectionIndex)
+        }
+
+        let config = UICollectionViewCompositionalLayoutConfiguration()
+        config.interSectionSpacing = 0
+        layout.configuration = config
+
+        return layout
+    }
+
+    private func configureCollectionView() {
+        collectionView.register(PurchaseFiltersViewCell.self, forCellWithReuseIdentifier: PurchaseFiltersViewCell.reuseID)
+        collectionView.register(PurchaseHistoryViewCell.self, forCellWithReuseIdentifier: PurchaseHistoryViewCell.reuseID)
+        collectionView.register(PurchasesHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: PurchasesHeaderView.reuseID)
+        collectionView.register(PurchasesFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: PurchasesFooterView.reuseID)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "EmptyCell")
+    }
+}
+
+extension PurchasesViewController {
+    // MARK: - filters SECTION
+    func createFiltersSection(using section: Int) -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.33))
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0)
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.20))
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.orthogonalScrollingBehavior = .none
+        let layoutSectionHeader = createSectionHeader()
+        let footerSection = createSectionFooter()
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader, footerSection]
+        return layoutSection
+    }
+
+    // MARK: - MAIN SECTION
+    func createMainSection(using section: Int) -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 3, trailing: 0)
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(0.28))
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.orthogonalScrollingBehavior = .none
+        return layoutSection
+    }
+
+    func createEmptySection(using section: Int) -&gt; NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(1), heightDimension: .absolute(1))
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .absolute(0.1), heightDimension: .absolute(0.1))
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        return layoutSection
+    }
+
+    func createSectionHeader() -&gt; NSCollectionLayoutBoundarySupplementaryItem {
+        let layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(34))
+        let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .topLeading)
+        return layoutSectionHeader
+    }
+
+    func createSectionFooter() -&gt; NSCollectionLayoutBoundarySupplementaryItem {
+        let layoutSectionFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(64))
+        let layoutSectionFooter = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionFooterSize, elementKind: UICollectionView.elementKindSectionFooter, alignment: .bottom)
+        return layoutSectionFooter
+    }
+}
+
+/*
+ USING TABLE VIEW
+ var filters = ["filter1", "filter2","filter3","filter4","filter5","filter6"]
+ var main = ["main1","main1","main1","main1","main1","main1","main1","main1","main1"]
+
+ private lazy var headerView: UIView = {
+ let view = UIView()
+ view.backgroundColor = Color.secondaryNeutralBlack
+ view.heightAnchor == 115
+ view.widthAnchor == UIScreen.main.bounds.width
+ return view
+ }()
+
+ private lazy var customBackButton: UIButton = {
+ let button = UIButton()
+ button.heightAnchor == 50
+ button.widthAnchor == 50
+ button.tintColor = .white
+ button.titleLabel?.font = NewFonts.H3.H3BoldWhite.font
+ button.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+ button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+ return button
+ }()
+
+ private lazy var historyLabel: UILabel = {
+ let label = UILabel()
+ label.font = NewFonts.H3.H3Bold.font
+ label.textAlignment = .center
+ label.text = "Purchase History"
+ label.numberOfLines = 0
+ label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "history-label")
+ label.textColor = Color.Common.white
+ return label
+ }()
+
+ private lazy var filtersTableView: UITableView = {
+ let tableView = UITableView()
+ tableView.backgroundColor = .systemGray
+ tableView.translatesAutoresizingMaskIntoConstraints = false
+ return tableView
+ }()
+
+ private lazy var mainTableView: UITableView = {
+ let tableView = UITableView()
+ tableView.backgroundColor = .systemGray
+ tableView.translatesAutoresizingMaskIntoConstraints = false
+ return tableView
+ }()
+
+ override func viewDidLoad() {
+ super.viewDidLoad()
+ view.backgroundColor = .white
+
+ // Uncomment the following line to preserve selection between presentations
+ // self.clearsSelectionOnViewWillAppear = false
+
+ // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+ self.navigationItem.rightBarButtonItem = self.editButtonItem
+ self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+ configureViews()
+ configureTableView()
+ }
+
+ private func configureTableView() {
+ // MARK: Filters TableView
+ //        filtersTableView = UITableView(frame: .zero, style: .plain)
+ //        filtersTableView.frame = view.bounds
+ //        filtersTableView.delegate = self
+ //        filtersTableView.dataSource = self
+ //        filtersTableView.backgroundColor = .red
+
+ mainTableView = UITableView(frame: .zero, style: .insetGrouped)
+ mainTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+ mainTableView.sectionHeaderHeight = UITableView.automaticDimension
+ mainTableView.frame = CGRect(x: 0, y: 116, width: view.bounds.width, height: view.bounds.height - 116)
+ mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: "filtersCell")
+ mainTableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
+ mainTableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "footer")
+
+ mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: "mainCell")
+ mainTableView.delegate = self
+ mainTableView.dataSource = self
+ mainTableView.backgroundColor = .systemBlue
+
+ //        view.addSubview(filtersTableView)
+ view.addSubview(mainTableView)
+ }
+
+ private func configureViews() {
+ headerView.addSubview(customBackButton)
+ headerView.addSubview(historyLabel)
+ view.addSubview(headerView)
+ configureLayouts()
+ }
+
+ private func configureLayouts() {
+ customBackButton.leadingAnchor == headerView.leadingAnchor + 20
+ customBackButton.centerYAnchor == headerView.centerYAnchor + 20
+
+ historyLabel.centerXAnchor == headerView.centerXAnchor
+ historyLabel.centerYAnchor == customBackButton.centerYAnchor
+
+ //        filtersTableView.topAnchor == headerView.bottomAnchor
+ //        mainTableView.topAnchor == headerView.bottomAnchor
+
+ }
+
+ @objc func dismissViewController() {
+ self.navigationController?.popToRootViewController(animated: true)
+ }
+
+ // MARK: - Table view data source
+
+ }
+
+ extension PurchasesViewController: UITableViewDelegate, UITableViewDataSource {
+ func numberOfSections(in tableView: UITableView) -&gt; Int {
+ // #warning Incomplete implementation, return the number of sections
+ return 2 // tableView == filtersTableView ? filters.count : main.count
+ }
+
+ func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int {
+ // #warning Incomplete implementation, return the number of rows
+ return section == 0 ? filters.count : main.count
+
+ }
+
+ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+ var returnCell = UITableViewCell()
+ if indexPath.section == 0 {
+ let filtersCell = tableView.dequeueReusableCell(withIdentifier: "filtersCell", for: indexPath)
+ let item = filters[indexPath.row]
+ filtersCell.textLabel?.text = item
+ filtersCell.backgroundColor = .gray
+ filtersCell.layer.borderWidth = 1
+ return filtersCell
+ } else {
+ let mainCell = tableView.dequeueReusableCell(withIdentifier: "mainCell", for: indexPath)
+ let item = main[indexPath.row]
+ mainCell.textLabel?.text = item
+ mainCell.backgroundColor = .green
+ mainCell.layer.borderWidth = 1
+ return mainCell
+ }
+ }
+
+ func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -&gt; UIView? {
+ if section == 0 {
+ //            let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
+ let button = UIButton()
+ button.setTitle("Button", for: .normal)
+ button.backgroundColor = .red
+ return button
+ }
+ return UIView()
+ }
+
+ func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -&gt; UIView? {
+ let button = UIButton()
+ button.setTitle("Button", for: .normal)
+ button.backgroundColor = .red
+ return button
+ }
+
+ func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -&gt; CGFloat {
+ return section == 0 ? 40 : 0
+ }
+
+ func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -&gt; CGFloat {
+
+ return section == 0 ? 40 : 0
+ }
+ }
+ */
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>B9F11144-047A-4E4A-9AD1-6AC734854D8E</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ExpandableCollectionView</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

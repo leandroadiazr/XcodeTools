@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  PagingSectionFooterView.swift
+//  StaplesConnectApp
+//
+//  Created by Connor Hawley on 5/9/22.
+//
+
+import Foundation
+import UIKit
+import Swiftilities
+import AdvancedPageControl
+import Anchorage
+import Combine
+
+class PagingSectionFooterView: UICollectionReusableView {
+
+    static let reuseID = "PagingSectionFooterView"
+
+    private var pagingInfoToken: AnyCancellable?
+
+    func subscribeTo(subject: PassthroughSubject&lt;PagingInfo, Never&gt;, for section: Int) {
+        pagingInfoToken = subject
+            .filter { $0.sectionIndex == section }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] pagingInfo in
+                self?.pageControl.setPage(pagingInfo.currentPage)
+            }
+    }
+
+    private lazy var pageControl: AdvancedPageControlView = {
+        let control = AdvancedPageControlView()
+        control.drawer = ExtendedDotDrawer(numberOfPages: 0,
+                                           height: 10,
+                                           width: 10,
+                                           space: 10,
+                                           raduis: 5,
+                                           indicatorColor: Color.brandRed,
+                                           dotsColor: Color.pageIndicatorGray,
+                                           isBordered: false)
+        return control
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+
+    func configure(with numberOfPages: Int) {
+        pageControl.numberOfPages = numberOfPages
+    }
+
+    private func setupView() {
+        backgroundColor = .clear
+        addSubview(pageControl)
+        pageControl.edgeAnchors == edgeAnchors
+    }
+
+}
+
+struct PagingInfo: Equatable, Hashable {
+    let sectionIndex: Int
+    let currentPage: Int
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>02E7A572-5281-4044-80FD-8B1EA878EDCD</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>PagingSectionFooterCollectionCell</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

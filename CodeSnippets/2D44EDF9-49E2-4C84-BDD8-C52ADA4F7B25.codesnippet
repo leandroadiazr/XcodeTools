@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  PurchasesFooterView.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 7/13/22.
+//
+
+import UIKit
+import Anchorage
+
+class PurchasesFooterView: UICollectionReusableView {
+    static let reuseID = "PurchasesHeaderView"
+
+    let purchaseImageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(systemName: "dollarsign.circle")?.tintedImage(color: .white)
+        view.widthAnchor == 40
+        view.heightAnchor == 40
+        view.contentMode = .scaleAspectFit
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.H3.H3Medium
+        label.textColor = .white
+        label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configureView(with leadingText: String?, amount: Double, trailingText: String?) {
+        titleLabel.setCombinedRegulardAndBoldText(regularString: leadingText ?? "You've saved", boldString: " $\(amount) ", regularStringTwo: trailingText ?? "with in-app coupons!", fontSize: 15)
+    }
+
+    private func configureView() {
+        backgroundColor = Color.staplesGreenBackgroundColor
+        addSubview(purchaseImageView)
+        addSubview(titleLabel)
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        purchaseImageView.leadingAnchor == leadingAnchor + 40
+        purchaseImageView.centerYAnchor == centerYAnchor
+
+        titleLabel.leadingAnchor == purchaseImageView.trailingAnchor + 20
+        titleLabel.centerYAnchor == self.centerYAnchor
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>2D44EDF9-49E2-4C84-BDD8-C52ADA4F7B25</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ExpandableCollectionFooter</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

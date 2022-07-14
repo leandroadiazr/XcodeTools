@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string>24HourTimer</string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>       if let timer = UserDefaults.timer24hours, timer.timeIntervalSinceNow &gt; 0 {
+            AppConstants.set24hTimer = timer.timeIntervalSinceNow
+            print(timer.timeIntervalSinceNow, AppConstants.set24hTimer)
+            return
+        } else {
+            UserDefaults.timer24hours = nil
+            guard let newDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) else { return }
+            UserDefaults.timer24hours = newDate
+            AppConstants.set24hTimer = newDate.timeIntervalSinceNow
+
+            self.countDownTimer(expectedTime: AppConstants.set24hTimer, shouldRepeat: true, completion: { timer, interval  in
+                if interval &lt;= 3 {
+                    DispatchQueue.main.async {
+                        self.showPopup(start: AppConstants.startDate, end: AppConstants.endDate)
+                    }
+                }
+                print(interval, "this is the current time left 2")
+                if interval &lt; 0  {
+                    timer.invalidate()
+                    self.checkForUserTimer()
+                }
+            })
+        }</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>95613EA7-13F3-4626-AB4C-5BF6B3E9C45B</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>24HourTimer</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

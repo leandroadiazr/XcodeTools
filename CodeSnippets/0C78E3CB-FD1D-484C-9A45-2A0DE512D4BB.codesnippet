@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  SmallTileTwoCTACell.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 4/30/22.
+//
+
+import UIKit
+import Anchorage
+
+class SmallTileTwoCTACell: UICollectionViewCell {
+
+    static let reuseID = "CommunityCell"
+
+    struct Layout {
+        static let locationHeight = CGFloat(28)
+        static let edgeInset = CGFloat(16)
+        static let textVerticalSpacing = CGFloat(5)
+        static let CTAVerticalSpacing = CGFloat(5)
+        static let noLocationHeight = CGFloat(50)
+        static let introTextHeight = CGFloat(16)
+        static let sideInset = CGFloat(30)
+        static let topInset = CGFloat(8)
+    }
+
+    private lazy var leftCTAButton: UIButton = {
+        let button = UIButton()
+        button.bonMotStyle = NewFonts.CTA.CTANotVisited
+        button.addTarget(self, action: #selector(leftctaAct), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var rightCTAButton: UIButton = {
+        let button = UIButton()
+        button.bonMotStyle = NewFonts.CTA.CTANotVisited
+        button.addTarget(self, action: #selector(rightctaAct), for: .touchUpInside)
+        return button
+    }()
+
+    @objc private func leftctaAct() {
+        if let ctaAction = leftCtaAction {
+            ctaAction()
+        }
+    }
+
+    @objc private func rightctaAct() {
+        if let ctaAction = rightCtaAction {
+            ctaAction()
+        }
+    }
+
+    var leftCtaAction: (() -&gt; Void)?
+    var rightCtaAction: (() -&gt; Void)?
+    var leftCtaText: String? {
+        didSet {
+            leftCTAButton.styledText = leftCtaText
+            guard let ctaText = leftCtaText else { return }
+            leftCTAButton.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: ctaText.lowercased().replacingOccurrences(of: " ", with: "-"))
+        }
+    }
+
+    var rightCtaText: String? {
+        didSet {
+            rightCTAButton.styledText = rightCtaText
+            guard let ctaText = rightCtaText else { return }
+            rightCTAButton.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: ctaText.lowercased().replacingOccurrences(of: " ", with: "-"))
+        }
+    }
+
+    var storeLocation: String? {
+        didSet {
+            storeLocationView.styledText = storeLocation
+        }
+    }
+
+    var hoursText: String? {
+        didSet {
+            hoursLabel.styledText = hoursText
+        }
+    }
+
+    private let introText: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.Body.BodyRegularSize14
+        label.textAlignment = .center
+        label.heightAnchor == Layout.edgeInset
+        label.styledText = L10n.Home.Store.connectCommunity
+        return label
+    }()
+
+    private let storeLocationView: UILabel = {
+        let label = UILabel()
+        label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "community-card-store-location")
+        label.bonMotStyle = NewFonts.H2.H2Bold
+        label.textAlignment = .left
+        return label
+    }()
+
+    private let hoursLabel: UILabel = {
+        let label = UILabel()
+        label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "community-card-store-open-status")
+        label.bonMotStyle = NewFonts.Body.BodyRegularSize14
+        label.textAlignment = .center
+        return label
+    }()
+
+    private let locationImageView: UIImageView = {
+        let view = UIImageView()
+        view.contentMode = .scaleAspectFit
+        view.image = Asset.Images.iconLocation.image
+        view.heightAnchor == Layout.locationHeight
+        view.widthAnchor == Layout.locationHeight
+        return view
+    }()
+
+    private let noLocationImageView: UIImageView = {
+        let view = UIImageView()
+        view.contentMode = .scaleAspectFit
+        view.image = Asset.Images.iconNolocationSmall.image
+        view.heightAnchor == Layout.noLocationHeight
+        view.widthAnchor == Layout.noLocationHeight
+        return view
+    }()
+
+    private let noStoreLocationView: UILabel = {
+        let label = UILabel()
+        label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "community-card-store-location")
+        label.bonMotStyle = NewFonts.H3.H3Medium
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        return label
+    }()
+
+    private lazy var locationStackView = UIStackView(axis: .horizontal, arrangedSubviews: [locationImageView, storeLocationView])
+   // private lazy var noLocationStackView = UIStackView(axis: .vertical, arrangedSubviews: [noLocationImageView, noStoreLocationView])
+
+    private lazy var CTAStackView: UIStackView = {
+        let stackView = UIStackView(axis: .horizontal, arrangedSubviews: [leftCTAButton, rightCTAButton])
+        stackView.alignment = .center
+        stackView.spacing = 8
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+
+    private lazy var textStackView: UIStackView = {
+        let stackView = UIStackView(axis: .vertical, arrangedSubviews: [introText, locationStackView, hoursLabel])
+        stackView.spacing = Layout.textVerticalSpacing
+        stackView.alignment = .center
+        return stackView
+    }()
+
+    private lazy var noLocStackView: UIStackView = {
+        let stackView = UIStackView(axis: .vertical, arrangedSubviews: [noLocationImageView, noStoreLocationView])
+        stackView.spacing = Layout.textVerticalSpacing
+        stackView.alignment = .center
+        return stackView
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(with store: PreferedStoreViewModel) {
+        if store.storeLocationName ==  L10n.Home.LocationNotFound.header {
+            noStoreLocationView.styledText = store.storeLocationName
+            noStoreLocationView.textAlignment = .center
+            leftCtaText = "Update Location"
+            leftCtaAction = store.leftCtaAction
+            introText.isHidden = true
+            rightCTAButton.isHidden = true
+            noLocStackView.isHidden = false
+            textStackView.isHidden = true
+        } else {
+            locationImageView.image = store.image
+            leftCtaText = store.leftCtaText
+            leftCtaAction = store.leftCtaAction
+            rightCtaText = store.rightCtaText
+            rightCtaAction = store.rightCtaAction
+            storeLocation = store.storeLocationName
+            hoursText = store.hourText
+            introText.isHidden = false
+            rightCTAButton.isHidden = false
+            noLocStackView.isHidden = true
+            textStackView.isHidden = false
+        }
+    }
+
+    private func setupViews() {
+        addCustomShadow(view: contentView)
+        defaultLayout()
+        addSubview(textStackView)
+        addSubview(noLocStackView)
+        addSubview(CTAStackView)
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        textStackView.topAnchor == self.topAnchor + Layout.edgeInset
+        textStackView.centerXAnchor == self.centerXAnchor
+
+        noLocStackView.topAnchor == self.topAnchor + Layout.topInset
+        noLocStackView.horizontalAnchors == self.horizontalAnchors + Layout.sideInset
+        noLocStackView.centerXAnchor == self.centerXAnchor
+
+        if noLocStackView.isHidden {
+            CTAStackView.topAnchor == textStackView.bottomAnchor + Layout.CTAVerticalSpacing
+        } else {
+            CTAStackView.topAnchor == noLocStackView.bottomAnchor + Layout.CTAVerticalSpacing
+        }
+        CTAStackView.bottomAnchor == self.bottomAnchor - Layout.edgeInset
+        CTAStackView.horizontalAnchors == self.horizontalAnchors + Layout.edgeInset
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>0C78E3CB-FD1D-484C-9A45-2A0DE512D4BB</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>TwoCTACollectionCell</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  PurchasesHeaderView.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 7/13/22.
+//
+
+import UIKit
+import Anchorage
+
+class PurchasesHeaderView: UICollectionReusableView {
+    static let reuseID = "PurchasesHeaderView"
+
+    struct Layout {
+        static let spacing: CGFloat = 20
+    }
+
+    lazy var filtersLabel: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.H4.H4MediumBodyColor
+        label.text = "Filters"
+        label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+
+    private lazy var leftCTAButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Filters", for: .normal)
+        button.setImage(Asset.Images.filterIcon.image, for: .normal)
+        button.widthAnchor == Layout.spacing
+        button.heightAnchor == Layout.spacing
+        button.addTarget(self, action: #selector(leftCTAActionButton), for: .touchUpInside)
+        return button
+    }()
+
+    lazy var rightCTAButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "x.circle.fill"), for: .normal)
+        button.tintColor = .systemGray
+        button.widthAnchor == Layout.spacing
+        button.heightAnchor == Layout.spacing
+        button.addTarget(self, action: #selector(rightCTAActionButton), for: .touchUpInside)
+        return button
+    }()
+
+    @objc private func rightCTAActionButton() {
+        rightCtaAction?()
+    }
+
+    @objc private func leftCTAActionButton() {
+        leftCtaAction?()
+    }
+
+    var rightCtaAction: (() -&gt; Void)?
+    var leftCtaAction: (() -&gt; Void)?
+
+    var rightCtaText: String? {
+        didSet {
+            rightCTAButton.styledText = rightCtaText
+            guard let ctaText = rightCtaText else { return }
+            rightCTAButton.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: ctaText.lowercased().replacingOccurrences(of: " ", with: "-"))
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configureView(with headerText: String, ctaText: String?) {
+        filtersLabel.styledText = headerText
+        rightCtaText = ctaText
+        rightCTAButton.isHidden = rightCtaText == nil ? true : false
+    }
+
+    private func configureView() {
+        addSubview(filtersLabel)
+        addSubview(leftCTAButton)
+        addSubview(rightCTAButton)
+        rightCTAButton.isHidden = true
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        let insetSpacing = CGFloat(10)
+        filtersLabel.leadingAnchor == self.leadingAnchor + insetSpacing
+        filtersLabel.centerYAnchor == self.centerYAnchor
+
+        leftCTAButton.leadingAnchor == filtersLabel.trailingAnchor + insetSpacing
+        leftCTAButton.centerYAnchor == self.centerYAnchor
+
+        rightCTAButton.trailingAnchor == self.trailingAnchor - insetSpacing
+        rightCTAButton.centerYAnchor == self.centerYAnchor
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>170EB56C-6B15-4EEB-BCEC-9B6CEFC48941</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>ExpandableCollectionHeader</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

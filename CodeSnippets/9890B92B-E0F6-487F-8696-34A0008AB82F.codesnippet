@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  HeaderReusableView.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 5/2/22.
+//
+
+import UIKit
+import Anchorage
+
+class HeaderReusableView: UICollectionReusableView {
+    static let reuseID = "HeaderReusableView"
+
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.H3.H3Medium
+        label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+
+    private lazy var rightCTAButton: UIButton = {
+        let button = UIButton()
+        button.bonMotStyle = NewFonts.CTA.CTAHeader
+        button.addTarget(self, action: #selector(rightctaAct), for: .touchUpInside)
+        return button
+    }()
+
+    @objc private func rightctaAct() {
+        if let ctaAction = rightCtaAction {
+            ctaAction()
+        }
+    }
+
+    var rightCtaAction: (() -&gt; Void)?
+
+    var rightCtaText: String? {
+        didSet {
+            rightCTAButton.styledText = rightCtaText
+            guard let ctaText = rightCtaText else { return }
+            rightCTAButton.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: ctaText.lowercased().replacingOccurrences(of: " ", with: "-"))
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configureView(with headerText: String, ctaText: String?) {
+        titleLabel.styledText = headerText
+        rightCtaText = ctaText
+        rightCTAButton.isHidden = rightCtaText == nil ? true : false
+    }
+
+    private func configureView() {
+        addSubview(titleLabel)
+        addSubview(rightCTAButton)
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        let insetSpacing = CGFloat(10)
+        titleLabel.leadingAnchor == self.leadingAnchor + insetSpacing
+        titleLabel.centerYAnchor == self.centerYAnchor
+        titleLabel.trailingAnchor == rightCTAButton.leadingAnchor - insetSpacing * 2
+        rightCTAButton.trailingAnchor == self.trailingAnchor - insetSpacing
+        rightCTAButton.centerYAnchor == self.centerYAnchor
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>9890B92B-E0F6-487F-8696-34A0008AB82F</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>HeaderReusableCollectionViewCell</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

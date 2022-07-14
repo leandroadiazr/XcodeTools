@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  SmallTileRightImageCTACell.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 4/30/22.
+//
+
+import UIKit
+import Anchorage
+
+class SmallTileRightImageCTACell: UICollectionViewCell {
+    static let reuseID = "SmallTileRightImageCTACell"
+
+    let label: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.H3.H3Bold
+        label.numberOfLines = 2
+        return label
+    }()
+
+    let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+
+    lazy var giveNowButton: UIButton = {
+        let button = UIButton()
+        button.bonMotStyle = Fonts.Title.boldMediumTitle4
+        button.styledText = L10n.Rewards.Enrolled.Button.giveNow
+        return button
+    }()
+
+    let amountView: AmountView = {
+        let amountView = AmountView()
+        amountView.currentStyle = .medium
+        return amountView
+    }()
+
+    var labelText: String? {
+        didSet {
+            label.styledText = labelText
+        }
+    }
+
+    var amount: CGFloat? {
+        didSet {
+            amountView.totalAmount = amount
+        }
+    }
+
+    var image: UIImage? {
+        didSet {
+            imageView.image = image
+        }
+    }
+
+    var accessibilityPrefix: String? {
+        didSet {
+            guard let accessibilityPrefix = accessibilityPrefix else { return }
+            giveNowButton.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "\(accessibilityPrefix)-back-to-community-give-now")
+        }
+    }
+
+    var giveNowAction: (() -&gt; Void)?
+
+    @objc private func giveNowAct() {
+        if let giveNowAction = giveNowAction {
+            giveNowAction()
+        }
+    }
+
+    private lazy var leftStackView: UIStackView = {
+        let stackView = UIStackView.init(axis: .vertical, arrangedSubviews: [label, amountView])
+        stackView.spacing = 6
+        stackView.alignment = .leading
+        return stackView
+    }()
+
+    private lazy var rightStackView: UIStackView = {
+        let stackView = UIStackView.init(axis: .vertical, arrangedSubviews: [imageView, giveNowButton])
+        stackView.spacing = 6
+        stackView.alignment = .trailing
+        stackView.isUserInteractionEnabled = true
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(giveNowAct))
+        stackView.addGestureRecognizer(tapGestureRecognizer)
+        return stackView
+    }()
+
+    lazy var rootStackView: UIStackView = {
+        let stackView = UIStackView.init(axis: .horizontal, arrangedSubviews: [leftStackView, rightStackView])
+        stackView.spacing = 10
+        stackView.alignment = .center
+        return stackView
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureViews()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configureViews() {
+        addCustomShadow(view: contentView)
+        defaultLayout()
+        giveNowButton.addTarget(self, action: #selector(giveNowAct), for: .touchUpInside)
+        addSubview(rootStackView)
+        configureLayout()
+    }
+
+    func configureWith(donation: DonationsViewModel) {
+        label.styledText = donation.labelText
+        imageView.image = donation.image
+        giveNowAction = donation.giveNowAction
+        amount = donation.amount
+    }
+
+    struct Layout {
+        static let edgeInsets = CGFloat(10)
+    }
+
+    func configureLayout() {
+        rootStackView.edgeAnchors == edgeAnchors + Layout.edgeInsets
+        rootStackView.horizontalAnchors == horizontalAnchors + Layout.edgeInsets
+    }
+
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>43B60315-116C-40EE-B8A4-7D12B10E3CB6</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>RightImageCTACollectionCell</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>

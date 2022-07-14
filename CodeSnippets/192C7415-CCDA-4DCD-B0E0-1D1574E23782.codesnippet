@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>//
+//  MediumTileCenterButtonCell.swift
+//  StaplesConnectApp
+//
+//  Created by Leandro Ramirez on 4/30/22.
+//
+
+import UIKit
+import Anchorage
+import Swiftilities
+import Services
+
+class MediumTileCenterButtonCell: UICollectionViewCell {
+    static let reuseID = "MediumTileCenterButtonCell"
+
+    let accessibilityPrefix = "home-available-to-spend-card"
+    struct Layout {
+        static let topInsets = CGFloat(10)
+        static let sideInsets = CGFloat(24)
+        static let buttonVerticalInsets = CGFloat(16)
+        static let buttonHeight = CGFloat(40)
+        static let innerSpacing = CGFloat(6)
+    }
+
+    private let headerLabel: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.H3.H3Bold
+        label.textAlignment = .center
+        label.styledText = L10n.Home.ClassroomRewards.title
+        return label
+    }()
+
+    lazy var expirationDateLabel: UILabel = {
+        let label = UILabel()
+        label.bonMotStyle = NewFonts.Body.BodyRegularSize14
+        label.textAlignment = .center
+        label.accessibilityIdentifier = AccessibiltyIds.text.createAccessibilityString(descriptor: "\(accessibilityPrefix)-expiration-info")
+        return label
+    }()
+
+    lazy var expirationDateButton: UIButton = {
+        let button = UIButton()
+        button.setImage(Asset.Images.iconQuestionSmall.image, for: .normal)
+        button.isHidden = true
+        button.addTarget(self, action: #selector(showExpirationInfo), for: .touchUpInside)
+        button.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "\(accessibilityPrefix)-expiration-info")
+        return button
+    }()
+
+    lazy var expirationStackView: UIStackView = {
+        let stackView = UIStackView.init(axis: .horizontal, arrangedSubviews: [expirationDateLabel, expirationDateButton])
+        stackView.spacing = Layout.innerSpacing
+        stackView.alignment = .center
+        return stackView
+    }()
+
+    private lazy var payWithRewardsButton: UIButton = {
+        let button = BetterButton.init(shape: .pill, style: .solid(backgroundColor: Color.brandYellow, foregroundColor: Color.secondaryNeutralBlack))
+        button.bonMotStyle = NewFonts.H3.H3Bold
+        button.styledText = L10n.Rewards.Enrolled.Button.payWithRewards
+        button.heightAnchor == Layout.buttonHeight
+        button.addTarget(self, action: #selector(payWithRewards), for: .touchUpInside)
+        button.accessibilityIdentifier = AccessibiltyIds.button.createAccessibilityString(descriptor: "\(accessibilityPrefix)-pay")
+        return button
+    }()
+
+    var payWithRewardsAction: (() -&gt; Void)?
+
+    var showExpirationInfoAction: (() -&gt; Void)?
+
+    @objc private func payWithRewards() {
+        if let payWithRewardsAction = payWithRewardsAction {
+            payWithRewardsAction()
+        }
+    }
+
+    @objc private func showExpirationInfo() {
+        if let showExpirationInfoAction = showExpirationInfoAction {
+            showExpirationInfoAction()
+        }
+    }
+
+    let amountView: AmountView = {
+        let amountView = AmountView()
+        amountView.currentStyle = .medium
+        return amountView
+    }()
+
+    var availableAmount: CGFloat? {
+        didSet {
+            amountView.totalAmount = availableAmount
+        }
+    }
+
+    var expirationDate: String? {
+        didSet {
+            if let expirationDate = expirationDate {
+                expirationDateLabel.styledText = L10n.Rewards.PromoCard.expiration("\(expirationDate)")
+                expirationDateButton.isHidden = false
+            }
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureViews()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configureWithRewards(rewards: RewardsViewModel) {
+        availableAmount = rewards.availableAmount
+        expirationDate = rewards.expirationDate
+        payWithRewardsAction = rewards.rewardsAction
+        showExpirationInfoAction = rewards.expirationInfoAction
+    }
+
+    func configureViews() {
+        addCustomShadow(view: contentView)
+        defaultLayout()
+        addSubview(headerLabel)
+        addSubview(amountView)
+        addSubview(expirationStackView)
+        addSubview(payWithRewardsButton)
+        configureLayout()
+    }
+
+    func configureLayout() {
+        headerLabel.topAnchor == topAnchor + Layout.topInsets
+        headerLabel.centerXAnchor == centerXAnchor
+
+        amountView.topAnchor == headerLabel.bottomAnchor + Layout.topInsets
+        amountView.centerXAnchor == centerXAnchor
+
+        expirationStackView.topAnchor == amountView.bottomAnchor
+        expirationStackView.centerXAnchor == centerXAnchor
+
+        payWithRewardsButton.topAnchor == expirationStackView.bottomAnchor + Layout.buttonVerticalInsets
+        payWithRewardsButton.horizontalAnchors == horizontalAnchors + Layout.sideInsets
+        payWithRewardsButton.centerXAnchor == centerXAnchor
+        payWithRewardsButton.bottomAnchor == self.bottomAnchor - Layout.buttonVerticalInsets
+    }
+}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>192C7415-CCDA-4DCD-B0E0-1D1574E23782</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>CenterButtonCollectionCell</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>0</integer>
+</dict>
+</plist>
